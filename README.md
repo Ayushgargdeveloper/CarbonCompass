@@ -1,6 +1,6 @@
-# Carbon Compass
+# Carbon Campass
 
-Carbon Compass is a Phase 1 Carbon Footprint Awareness Platform. It helps individuals estimate their weekly carbon footprint, understand the main contributors, track saved results locally, and follow simple personalized reduction tips.
+Carbon Campass is a Phase 1 Carbon Footprint Awareness Platform. It helps individuals estimate their weekly carbon footprint, understand the main contributors, track saved results locally, and follow simple personalized reduction tips.
 
 ## Features
 

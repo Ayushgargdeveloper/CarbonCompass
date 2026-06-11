@@ -22,7 +22,7 @@ export default function App() {
           </p>
           <div className="grid min-w-0 gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
             <div className="min-w-0">
-              <h1 className="text-4xl font-black leading-tight sm:text-5xl">Carbon Compass</h1>
+              <h1 className="text-4xl font-black leading-tight sm:text-5xl">Carbon Campass</h1>
               <p className="mt-4 max-w-2xl break-words text-base leading-relaxed text-forest-100 sm:text-lg">
                 Calculate, track, and reduce your footprint with simple personalized eco actions.
               </p>
