@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Carbon Compass icon">
+  <rect width="64" height="64" rx="14" fill="#12351f"/>
+  <path d="M18 38c0-12 8-21 24-24 0 18-8 32-24 32 0-3 1-6 3-9 4-7 10-12 17-16-8 2-15 7-20 17Z" fill="#b6db74"/>
+  <circle cx="43" cy="43" r="8" fill="#ffffff"/>
+  <path d="M43 38v5l4 2" stroke="#12351f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
