@@ -1,4 +1,6 @@
-export default function Card({ title, eyebrow, children, className = "" }) {
+import { memo } from "react";
+
+function Card({ title, eyebrow, children, className = "" }) {
   return (
     <section className={`rounded-2xl border border-forest-100 bg-white p-5 shadow-sm ${className}`}>
       {eyebrow ? <p className="text-xs font-bold uppercase tracking-wide text-forest-600">{eyebrow}</p> : null}
@@ -7,3 +9,5 @@ export default function Card({ title, eyebrow, children, className = "" }) {
     </section>
   );
 }
+
+export default memo(Card);

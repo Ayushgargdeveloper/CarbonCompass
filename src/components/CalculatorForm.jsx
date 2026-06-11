@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { dietTypes, recyclingHabits, transportModes } from "../data/options";
 
-export default function CalculatorForm({ values, errors, onChange, onSubmit }) {
+function CalculatorForm({ values, errors, onChange, onSubmit }) {
   return (
     <form className="grid gap-4" onSubmit={onSubmit} noValidate>
       <div>
@@ -92,3 +93,5 @@ function SelectField({ label, name, value, options, onChange, error }) {
     </div>
   );
 }
+
+export default memo(CalculatorForm);

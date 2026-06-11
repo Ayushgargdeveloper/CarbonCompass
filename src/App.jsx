@@ -1,15 +1,16 @@
-import { useMemo, useState } from "react";
-import ActionChecklist from "./components/ActionChecklist";
+import { Suspense, lazy, useCallback, useMemo, useState } from "react";
 import CalculatorForm from "./components/CalculatorForm";
 import Card from "./components/Card";
-import Insights from "./components/Insights";
-import ProgressTracker from "./components/ProgressTracker";
 import ResultSummary from "./components/ResultSummary";
 import { defaultFormValues, ecoActions } from "./data/options";
 import { calculateFootprint } from "./utils/carbon";
 import { generateRecommendations } from "./utils/recommendations";
 import { hasErrors, sanitizeCalculatorInput, validateCalculatorInput } from "./utils/validation";
 import { loadActionState, loadRecords, saveActionState, saveRecord } from "./utils/storage";
+
+const ActionChecklist = lazy(() => import("./components/ActionChecklist"));
+const Insights = lazy(() => import("./components/Insights"));
+const ProgressTracker = lazy(() => import("./components/ProgressTracker"));
 
 export default function App() {
   const [formValues, setFormValues] = useState(defaultFormValues);
@@ -20,13 +21,13 @@ export default function App() {
 
   const tips = useMemo(() => generateRecommendations(result.input, result), [result]);
 
-  function handleChange(event) {
+  const handleChange = useCallback((event) => {
     const { name, value } = event.target;
     const nextValue = event.target.type === "number" && Number(value) < 0 ? "0" : value;
     setFormValues((current) => ({ ...current, [name]: nextValue }));
-  }
+  }, []);
 
-  function handleSubmit(event) {
+  const handleSubmit = useCallback((event) => {
     event.preventDefault();
     const nextErrors = validateCalculatorInput(formValues);
     setErrors(nextErrors);
@@ -36,9 +37,9 @@ export default function App() {
     }
 
     setResult(calculateFootprint(sanitizeCalculatorInput(formValues)));
-  }
+  }, [formValues]);
 
-  function handleSaveRecord() {
+  const handleSaveRecord = useCallback(() => {
     const savedAt = new Date();
     const record = {
       id: crypto.randomUUID(),
@@ -47,13 +48,15 @@ export default function App() {
       total: result.total
     };
     setRecords(saveRecord(record));
-  }
+  }, [result.total]);
 
-  function handleToggleAction(index) {
-    const nextState = { ...actionState, [index]: !actionState[index] };
-    setActionState(nextState);
-    saveActionState(nextState);
-  }
+  const handleToggleAction = useCallback((index) => {
+    setActionState((currentState) => {
+      const nextState = { ...currentState, [index]: !currentState[index] };
+      saveActionState(nextState);
+      return nextState;
+    });
+  }, []);
 
   return (
     <main className="min-h-screen">
@@ -87,18 +90,32 @@ export default function App() {
           <ResultSummary result={result} />
         </Card>
 
-        <Card title="Personalized insights" eyebrow="Step 3">
-          <Insights tips={tips} />
-        </Card>
+        <Suspense fallback={<SectionFallback title="Personalized insights" eyebrow="Step 3" />}>
+          <Card title="Personalized insights" eyebrow="Step 3">
+            <Insights tips={tips} />
+          </Card>
+        </Suspense>
 
-        <Card title="Progress tracker" eyebrow="Step 4">
-          <ProgressTracker records={records} onSave={handleSaveRecord} />
-        </Card>
+        <Suspense fallback={<SectionFallback title="Progress tracker" eyebrow="Step 4" />}>
+          <Card title="Progress tracker" eyebrow="Step 4">
+            <ProgressTracker records={records} onSave={handleSaveRecord} />
+          </Card>
+        </Suspense>
 
-        <Card title="Eco action checklist" eyebrow="Step 5" className="lg:col-span-2">
-          <ActionChecklist actions={ecoActions} state={actionState} onToggle={handleToggleAction} />
-        </Card>
+        <Suspense fallback={<SectionFallback title="Eco action checklist" eyebrow="Step 5" className="lg:col-span-2" />}>
+          <Card title="Eco action checklist" eyebrow="Step 5" className="lg:col-span-2">
+            <ActionChecklist actions={ecoActions} state={actionState} onToggle={handleToggleAction} />
+          </Card>
+        </Suspense>
       </div>
     </main>
+  );
+}
+
+function SectionFallback({ title, eyebrow, className = "" }) {
+  return (
+    <Card title={title} eyebrow={eyebrow} className={className}>
+      <p className="text-slate-600">Loading section...</p>
+    </Card>
   );
 }

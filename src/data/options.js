@@ -34,3 +34,8 @@ export const defaultFormValues = {
   dietType: "mixed",
   recyclingHabit: "sometimes"
 };
+
+export const emissionFactors = {
+  electricityKgPerKwh: 0.708,
+  weeksPerMonth: 4.345
+};

@@ -36,6 +36,7 @@ http://127.0.0.1:5900
 
 ```bash
 npm test
+npm run lint
 npm audit --audit-level=high
 ```
 
@@ -72,6 +73,7 @@ npm audit --audit-level=high
 - `localStorage` save/load and invalid-data tests.
 - Accessible app rendering and invalid-input UI tests.
 - Source quality and security guardrail tests.
+- ESLint validates unused code, React Hooks usage, refresh-safe exports, and console-free source.
 
 ### Accessibility
 

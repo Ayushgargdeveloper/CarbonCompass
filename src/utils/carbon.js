@@ -1,7 +1,5 @@
-import { dietTypes, recyclingHabits, transportModes } from "../data/options";
+import { dietTypes, emissionFactors, recyclingHabits, transportModes } from "../data/options";
 import { sanitizeCalculatorInput } from "./validation";
-
-const ELECTRICITY_KG_PER_KWH = 0.708;
 
 function findByValue(collection, value) {
   return collection.find((item) => item.value === value) || collection[0];
@@ -17,7 +15,7 @@ export function calculateFootprint(input) {
   const dietType = findByValue(dietTypes, safeInput.dietType);
   const recyclingHabit = findByValue(recyclingHabits, safeInput.recyclingHabit);
 
-  const energy = (safeInput.electricityKwh * ELECTRICITY_KG_PER_KWH) / 4.345;
+  const energy = (safeInput.electricityKwh * emissionFactors.electricityKgPerKwh) / emissionFactors.weeksPerMonth;
   const travel = safeInput.travelKm * transportMode.kgPerKm;
   const diet = dietType.weeklyKg;
   const recyclingCredit = recyclingHabit.weeklyCreditKg;

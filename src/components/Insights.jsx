@@ -1,4 +1,6 @@
-export default function Insights({ tips }) {
+import { memo } from "react";
+
+function Insights({ tips }) {
   return (
     <ul className="grid gap-3">
       {tips.map((tip) => (
@@ -9,3 +11,5 @@ export default function Insights({ tips }) {
     </ul>
   );
 }
+
+export default memo(Insights);
