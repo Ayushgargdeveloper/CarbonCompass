@@ -1,10 +1,18 @@
 import { memo, useCallback } from "react";
+import PropTypes from "prop-types";
+import { actionStateShape } from "../types/propTypes";
 
 function ActionChecklist({ actions, state, onToggle }) {
   return (
     <ul className="grid gap-3">
       {actions.map((action, index) => (
-        <ActionItem key={action} action={action} completed={Boolean(state[index])} index={index} onToggle={onToggle} />
+        <ActionItem
+          key={action}
+          action={action}
+          completed={Boolean(state[index])}
+          index={index}
+          onToggle={onToggle}
+        />
       ))}
     </ul>
   );
@@ -30,5 +38,18 @@ function ActionItem({ action, completed, index, onToggle }) {
     </li>
   );
 }
+
+ActionChecklist.propTypes = {
+  actions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onToggle: PropTypes.func.isRequired,
+  state: actionStateShape.isRequired
+};
+
+ActionItem.propTypes = {
+  action: PropTypes.string.isRequired,
+  completed: PropTypes.bool.isRequired,
+  index: PropTypes.number.isRequired,
+  onToggle: PropTypes.func.isRequired
+};
 
 export default memo(ActionChecklist);

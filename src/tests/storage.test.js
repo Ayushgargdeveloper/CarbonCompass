@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { getProgressMessage, loadActionState, loadRecords, saveActionState, saveRecord } from "../utils/storage";
+import {
+  getProgressMessage,
+  loadActionState,
+  loadRecords,
+  saveActionState,
+  saveRecord
+} from "../services/storageService";
 
 function createStorage(initial = {}) {
   const data = new Map(Object.entries(initial));

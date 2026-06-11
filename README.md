@@ -37,6 +37,7 @@ http://127.0.0.1:5900
 ```bash
 npm test
 npm run lint
+npm run format:check
 npm audit --audit-level=high
 ```
 
@@ -44,9 +45,12 @@ npm audit --audit-level=high
 
 ### Code Quality
 
-- Clean structure: `src/components`, `src/utils`, `src/data`, `src/tests`.
-- Reusable components for form, cards, results, insights, progress, and checklist.
-- Calculation, validation, recommendation, and storage logic are separated into utilities.
+- Clean structure: `src/components`, `src/hooks`, `src/services`, `src/types`, `src/utils`, `src/data`, `src/tests`.
+- Reusable components for form, cards, metric bars, results, insights, progress, and checklist.
+- Dashboard state is isolated in a custom hook.
+- Calculation, validation, recommendation, record creation, and storage logic are separated from UI.
+- Shared PropTypes document component contracts.
+- ESLint runs with zero warnings and Prettier formatting is enforced.
 - Source guardrail tests block unsafe HTML injection, console logging, and obvious exposed key names.
 
 ### Security

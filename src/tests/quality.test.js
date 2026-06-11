@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
 function listSourceFiles(directory) {
@@ -8,7 +8,8 @@ function listSourceFiles(directory) {
     if (statSync(path).isDirectory()) {
       return listSourceFiles(path);
     }
-    return /\.(js|jsx)$/.test(path) && !path.includes(`${join("src", "tests")}${"\\"}`) ? [path] : [];
+    const relativePath = relative(process.cwd(), path);
+    return /\.(js|jsx)$/.test(path) && !relativePath.startsWith(join("src", "tests")) ? [path] : [];
   });
 }
 

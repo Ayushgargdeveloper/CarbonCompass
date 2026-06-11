@@ -1,5 +1,8 @@
 import { memo, useMemo } from "react";
-import { getProgressMessage } from "../utils/storage";
+import PropTypes from "prop-types";
+import MetricBar from "./MetricBar";
+import { getProgressMessage } from "../services/storageService";
+import { recordShape } from "../types/propTypes";
 
 function ProgressTracker({ records, onSave }) {
   const maxTotal = useMemo(() => Math.max(...records.map((record) => record.total), 1), [records]);
@@ -17,11 +20,16 @@ function ProgressTracker({ records, onSave }) {
 
       <p className="rounded-xl bg-forest-50 p-3 text-sm font-semibold text-forest-900">{progressMessage}</p>
 
-      <div className="rounded-2xl border border-forest-100 bg-white p-4" aria-label="Previous footprint records chart">
+      <div
+        className="rounded-2xl border border-forest-100 bg-white p-4"
+        aria-label="Previous footprint records chart"
+      >
         {records.length > 0 ? (
           <ol className="grid gap-3">
             {records.map((record) => (
-              <ProgressRecord key={record.id} record={record} maxTotal={maxTotal} />
+              <li key={record.id}>
+                <MetricBar label={record.label} value={record.total} maxValue={maxTotal} />
+              </li>
             ))}
           </ol>
         ) : (
@@ -34,20 +42,9 @@ function ProgressTracker({ records, onSave }) {
   );
 }
 
-function ProgressRecord({ record, maxTotal }) {
-  const width = `${Math.max((record.total / maxTotal) * 100, 6)}%`;
-
-  return (
-    <li>
-      <div className="mb-1 flex items-center justify-between text-sm font-semibold text-slate-700">
-        <span>{record.label}</span>
-        <span>{record.total} kg</span>
-      </div>
-      <div className="h-3 overflow-hidden rounded-full bg-forest-100">
-        <div className="h-full rounded-full bg-forest-600" style={{ width }} />
-      </div>
-    </li>
-  );
-}
+ProgressTracker.propTypes = {
+  onSave: PropTypes.func.isRequired,
+  records: PropTypes.arrayOf(recordShape).isRequired
+};
 
 export default memo(ProgressTracker);

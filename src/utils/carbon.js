@@ -15,7 +15,8 @@ export function calculateFootprint(input) {
   const dietType = findByValue(dietTypes, safeInput.dietType);
   const recyclingHabit = findByValue(recyclingHabits, safeInput.recyclingHabit);
 
-  const energy = (safeInput.electricityKwh * emissionFactors.electricityKgPerKwh) / emissionFactors.weeksPerMonth;
+  const energy =
+    (safeInput.electricityKwh * emissionFactors.electricityKgPerKwh) / emissionFactors.weeksPerMonth;
   const travel = safeInput.travelKm * transportMode.kgPerKm;
   const diet = dietType.weeklyKg;
   const recyclingCredit = recyclingHabit.weeklyCreditKg;

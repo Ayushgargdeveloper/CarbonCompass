@@ -1,4 +1,7 @@
 import { memo, useMemo } from "react";
+import PropTypes from "prop-types";
+import MetricBar from "./MetricBar";
+import { breakdownItemShape } from "../types/propTypes";
 
 const COLORS = ["#2f7d4c", "#86b86f", "#f0b84b", "#6f8f7a"];
 
@@ -14,9 +17,18 @@ function ResultSummary({ result }) {
         <p className="text-forest-100">kg CO2e per week</p>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-forest-100 bg-white p-4" aria-label="Category-wise carbon breakdown chart">
+      <div
+        className="grid gap-3 rounded-2xl border border-forest-100 bg-white p-4"
+        aria-label="Category-wise carbon breakdown chart"
+      >
         {chartData.map((item, index) => (
-          <BreakdownBar key={item.name} item={item} maxValue={maxValue} color={COLORS[index % COLORS.length]} />
+          <MetricBar
+            key={item.name}
+            label={item.name}
+            value={item.value}
+            maxValue={maxValue}
+            color={COLORS[index % COLORS.length]}
+          />
         ))}
         {chartData.length === 0 ? (
           <p className="text-center text-slate-600">Enter values to see a category breakdown.</p>
@@ -35,20 +47,11 @@ function ResultSummary({ result }) {
   );
 }
 
-function BreakdownBar({ item, maxValue, color }) {
-  const width = `${Math.max((item.value / maxValue) * 100, 6)}%`;
-
-  return (
-    <div>
-      <div className="mb-1 flex items-center justify-between text-sm font-semibold text-slate-700">
-        <span>{item.name}</span>
-        <span>{item.value} kg</span>
-      </div>
-      <div className="h-3 overflow-hidden rounded-full bg-forest-100">
-        <div className="h-full rounded-full" style={{ width, backgroundColor: color }} />
-      </div>
-    </div>
-  );
-}
+ResultSummary.propTypes = {
+  result: PropTypes.shape({
+    breakdown: PropTypes.arrayOf(breakdownItemShape).isRequired,
+    total: PropTypes.number.isRequired
+  }).isRequired
+};
 
 export default memo(ResultSummary);

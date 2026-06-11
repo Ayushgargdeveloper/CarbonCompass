@@ -1,68 +1,25 @@
-import { Suspense, lazy, useCallback, useMemo, useState } from "react";
+import { Suspense, lazy } from "react";
+import PropTypes from "prop-types";
 import CalculatorForm from "./components/CalculatorForm";
 import Card from "./components/Card";
 import ResultSummary from "./components/ResultSummary";
-import { defaultFormValues, ecoActions } from "./data/options";
-import { calculateFootprint } from "./utils/carbon";
-import { generateRecommendations } from "./utils/recommendations";
-import { hasErrors, sanitizeCalculatorInput, validateCalculatorInput } from "./utils/validation";
-import { loadActionState, loadRecords, saveActionState, saveRecord } from "./utils/storage";
+import { ecoActions } from "./data/options";
+import { useCarbonDashboard } from "./hooks/useCarbonDashboard";
 
 const ActionChecklist = lazy(() => import("./components/ActionChecklist"));
 const Insights = lazy(() => import("./components/Insights"));
 const ProgressTracker = lazy(() => import("./components/ProgressTracker"));
 
 export default function App() {
-  const [formValues, setFormValues] = useState(defaultFormValues);
-  const [errors, setErrors] = useState({});
-  const [result, setResult] = useState(() => calculateFootprint(defaultFormValues));
-  const [records, setRecords] = useState(() => loadRecords());
-  const [actionState, setActionState] = useState(() => loadActionState(ecoActions.length));
-
-  const tips = useMemo(() => generateRecommendations(result.input, result), [result]);
-
-  const handleChange = useCallback((event) => {
-    const { name, value } = event.target;
-    const nextValue = event.target.type === "number" && Number(value) < 0 ? "0" : value;
-    setFormValues((current) => ({ ...current, [name]: nextValue }));
-  }, []);
-
-  const handleSubmit = useCallback((event) => {
-    event.preventDefault();
-    const nextErrors = validateCalculatorInput(formValues);
-    setErrors(nextErrors);
-
-    if (hasErrors(nextErrors)) {
-      return;
-    }
-
-    setResult(calculateFootprint(sanitizeCalculatorInput(formValues)));
-  }, [formValues]);
-
-  const handleSaveRecord = useCallback(() => {
-    const savedAt = new Date();
-    const record = {
-      id: crypto.randomUUID(),
-      date: savedAt.toISOString(),
-      label: savedAt.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-      total: result.total
-    };
-    setRecords(saveRecord(record));
-  }, [result.total]);
-
-  const handleToggleAction = useCallback((index) => {
-    setActionState((currentState) => {
-      const nextState = { ...currentState, [index]: !currentState[index] };
-      saveActionState(nextState);
-      return nextState;
-    });
-  }, []);
+  const dashboard = useCarbonDashboard();
 
   return (
     <main className="min-h-screen">
       <header className="bg-forest-900 text-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
-          <p className="text-sm font-bold uppercase tracking-wide text-forest-100">Carbon Footprint Awareness Platform</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-forest-100">
+            Carbon Footprint Awareness Platform
+          </p>
           <div className="grid min-w-0 gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
             <div className="min-w-0">
               <h1 className="text-4xl font-black leading-tight sm:text-5xl">Carbon Compass</h1>
@@ -83,28 +40,41 @@ export default function App() {
 
       <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
         <Card title="Carbon footprint calculator" eyebrow="Step 1">
-          <CalculatorForm values={formValues} errors={errors} onChange={handleChange} onSubmit={handleSubmit} />
+          <CalculatorForm
+            values={dashboard.formValues}
+            errors={dashboard.errors}
+            onChange={dashboard.updateFormValue}
+            onSubmit={dashboard.submitCalculator}
+          />
         </Card>
 
         <Card title="Your result" eyebrow="Step 2">
-          <ResultSummary result={result} />
+          <ResultSummary result={dashboard.result} />
         </Card>
 
         <Suspense fallback={<SectionFallback title="Personalized insights" eyebrow="Step 3" />}>
           <Card title="Personalized insights" eyebrow="Step 3">
-            <Insights tips={tips} />
+            <Insights tips={dashboard.tips} />
           </Card>
         </Suspense>
 
         <Suspense fallback={<SectionFallback title="Progress tracker" eyebrow="Step 4" />}>
           <Card title="Progress tracker" eyebrow="Step 4">
-            <ProgressTracker records={records} onSave={handleSaveRecord} />
+            <ProgressTracker records={dashboard.records} onSave={dashboard.saveCurrentRecord} />
           </Card>
         </Suspense>
 
-        <Suspense fallback={<SectionFallback title="Eco action checklist" eyebrow="Step 5" className="lg:col-span-2" />}>
+        <Suspense
+          fallback={
+            <SectionFallback title="Eco action checklist" eyebrow="Step 5" className="lg:col-span-2" />
+          }
+        >
           <Card title="Eco action checklist" eyebrow="Step 5" className="lg:col-span-2">
-            <ActionChecklist actions={ecoActions} state={actionState} onToggle={handleToggleAction} />
+            <ActionChecklist
+              actions={ecoActions}
+              state={dashboard.actionState}
+              onToggle={dashboard.toggleAction}
+            />
           </Card>
         </Suspense>
       </div>
@@ -119,3 +89,9 @@ function SectionFallback({ title, eyebrow, className = "" }) {
     </Card>
   );
 }
+
+SectionFallback.propTypes = {
+  className: PropTypes.string,
+  eyebrow: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired
+};

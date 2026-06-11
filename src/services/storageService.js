@@ -1,5 +1,9 @@
-const RECORDS_KEY = "carbon-compass-records";
-const ACTIONS_KEY = "carbon-compass-actions";
+const MAX_SAVED_RECORDS = 8;
+const STORAGE_KEYS = {
+  actions: "carbon-compass-actions",
+  records: "carbon-compass-records"
+};
+
 const memoryStore = new Map();
 
 const fallbackStorage = {
@@ -22,7 +26,11 @@ function getStorage(storage) {
   }
 
   try {
-    if (typeof window !== "undefined" && window.localStorage && typeof window.localStorage.getItem === "function") {
+    if (
+      typeof window !== "undefined" &&
+      window.localStorage &&
+      typeof window.localStorage.getItem === "function"
+    ) {
       return window.localStorage;
     }
   } catch {
@@ -34,7 +42,7 @@ function getStorage(storage) {
 
 export function loadRecords(storage) {
   const activeStorage = getStorage(storage);
-  const parsed = safeParse(activeStorage.getItem(RECORDS_KEY), []);
+  const parsed = safeParse(activeStorage.getItem(STORAGE_KEYS.records), []);
   if (!Array.isArray(parsed)) {
     return [];
   }
@@ -51,14 +59,14 @@ export function loadRecords(storage) {
 export function saveRecord(record, storage) {
   const activeStorage = getStorage(storage);
   const records = loadRecords(activeStorage);
-  const nextRecords = [...records, record].slice(-8);
-  activeStorage.setItem(RECORDS_KEY, JSON.stringify(nextRecords));
+  const nextRecords = [...records, record].slice(-MAX_SAVED_RECORDS);
+  activeStorage.setItem(STORAGE_KEYS.records, JSON.stringify(nextRecords));
   return nextRecords;
 }
 
 export function loadActionState(actionCount, storage) {
   const activeStorage = getStorage(storage);
-  const parsed = safeParse(activeStorage.getItem(ACTIONS_KEY), {});
+  const parsed = safeParse(activeStorage.getItem(STORAGE_KEYS.actions), {});
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
     return {};
   }
@@ -71,7 +79,7 @@ export function loadActionState(actionCount, storage) {
 }
 
 export function saveActionState(state, storage) {
-  getStorage(storage).setItem(ACTIONS_KEY, JSON.stringify(state));
+  getStorage(storage).setItem(STORAGE_KEYS.actions, JSON.stringify(state));
 }
 
 export function getProgressMessage(records) {

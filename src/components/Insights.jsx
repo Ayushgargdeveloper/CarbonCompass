@@ -1,4 +1,5 @@
 import { memo } from "react";
+import PropTypes from "prop-types";
 
 function Insights({ tips }) {
   return (
@@ -11,5 +12,9 @@ function Insights({ tips }) {
     </ul>
   );
 }
+
+Insights.propTypes = {
+  tips: PropTypes.arrayOf(PropTypes.string).isRequired
+};
 
 export default memo(Insights);

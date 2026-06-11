@@ -1,5 +1,7 @@
 import { memo } from "react";
+import PropTypes from "prop-types";
 import { dietTypes, recyclingHabits, transportModes } from "../data/options";
+import { calculatorErrorsShape, calculatorValuesShape } from "../types/propTypes";
 
 function CalculatorForm({ values, errors, onChange, onSubmit }) {
   return (
@@ -50,9 +52,30 @@ function CalculatorForm({ values, errors, onChange, onSubmit }) {
         ) : null}
       </div>
 
-      <SelectField label="Transport mode" name="transportMode" value={values.transportMode} options={transportModes} onChange={onChange} error={errors.transportMode} />
-      <SelectField label="Diet type" name="dietType" value={values.dietType} options={dietTypes} onChange={onChange} error={errors.dietType} />
-      <SelectField label="Recycling habit" name="recyclingHabit" value={values.recyclingHabit} options={recyclingHabits} onChange={onChange} error={errors.recyclingHabit} />
+      <SelectField
+        label="Transport mode"
+        name="transportMode"
+        value={values.transportMode}
+        options={transportModes}
+        onChange={onChange}
+        error={errors.transportMode}
+      />
+      <SelectField
+        label="Diet type"
+        name="dietType"
+        value={values.dietType}
+        options={dietTypes}
+        onChange={onChange}
+        error={errors.dietType}
+      />
+      <SelectField
+        label="Recycling habit"
+        name="recyclingHabit"
+        value={values.recyclingHabit}
+        options={recyclingHabits}
+        onChange={onChange}
+        error={errors.recyclingHabit}
+      />
 
       <button
         type="submit"
@@ -93,5 +116,26 @@ function SelectField({ label, name, value, options, onChange, error }) {
     </div>
   );
 }
+
+const optionShape = PropTypes.shape({
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired
+});
+
+CalculatorForm.propTypes = {
+  errors: calculatorErrorsShape.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  values: calculatorValuesShape.isRequired
+};
+
+SelectField.propTypes = {
+  error: PropTypes.string,
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(optionShape).isRequired,
+  value: PropTypes.string.isRequired
+};
 
 export default memo(CalculatorForm);
